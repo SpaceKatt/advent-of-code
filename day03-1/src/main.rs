@@ -29,19 +29,15 @@ struct PortCoordinate {
 }
 
 fn get_coordinate_hash(coord: &PortCoordinate) -> Result<String, Box<dyn Error>> {
-    let x_hash = if coord.x < 0 {
-        format!("-{:0>10}", i32::abs(coord.x).to_string())
-    } else {
-        format!("{:0>11}", coord.x.to_string())
+    let format_int = |x: i32| {
+        if x < 0 {
+            format!("-{:0>10}", i32::abs(x).to_string())
+        } else {
+            format!("{:0>11}", x.to_string())
+        }
     };
 
-    let y_hash = if coord.x < 0 {
-        format!("-{:0>10}", i32::abs(coord.y).to_string())
-    } else {
-        format!("{:0>11}", coord.y.to_string())
-    };
-
-    let hash = format!("{}{}", x_hash, y_hash);
+    let hash = format!("{}{}", format_int(coord.x), format_int(coord.y));
 
     Ok(hash)
 }
@@ -121,9 +117,7 @@ fn traverse_wire(wire: &Wire, wire_id: u32, momento: &mut WireMomento) {
             }
 
             let mut wire_memo = momento.momento.get(&key).unwrap().to_vec();
-
             wire_memo[wire_id as usize] = true;
-
 
             momento.momento.insert(key.to_string(), wire_memo);
 
