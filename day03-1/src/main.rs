@@ -12,15 +12,11 @@ struct Record {
     directions: Vec<String>,
 }
 
-struct Wire {
-    directions: Vec<String>,
-}
+type Wire = Vec<String>;
 
 type WireBox = Vec<Wire>;
 
-struct WireMemo {
-    memo: Vec<bool>,
-}
+type WireMemo = Vec<bool>;
 
 struct WireMomento {
     box_size: usize,
@@ -75,11 +71,7 @@ fn parse_input(file_path: &str) -> Result<WireBox, Box<dyn Error>> {
                 continue;
             } 
 
-            let wire = Wire {
-                directions,
-            };
-
-            wire_box.push(wire);
+            wire_box.push(directions);
         }
     }
 
@@ -102,7 +94,7 @@ fn get_target(direction: String) -> Result<PortCoordinate, Box<dyn Error>> {
 fn traverse_wire(wire: &Wire, wire_id: u32, momento: &mut WireMomento) {
     let mut wire_pointer = PortCoordinate { x: 0, y: 0 };
 
-    for path in wire.directions.iter() {
+    for path in wire.iter() {
         let target = get_target(path.to_string()).unwrap();
         let is_horizontal = target.x != 0;
 
@@ -123,17 +115,17 @@ fn traverse_wire(wire: &Wire, wire_id: u32, momento: &mut WireMomento) {
 
 
             if !momento.momento.contains_key(&key) {
-                let fresh_memo = WireMemo { memo: vec![false; momento.box_size] };
+                let fresh_memo: WireMemo = vec![false; momento.box_size];
 
                 momento.momento.insert(key.to_string(), fresh_memo);
             }
 
-            let mut wire_memo = momento.momento.get(&key).unwrap().memo.to_vec();
+            let mut wire_memo = momento.momento.get(&key).unwrap().to_vec();
 
             wire_memo[wire_id as usize] = true;
 
 
-            momento.momento.insert(key.to_string(),  WireMemo { memo: wire_memo });
+            momento.momento.insert(key.to_string(), wire_memo);
 
             wire_ptr = step;
         }
@@ -183,7 +175,7 @@ fn main() {
     for key in momento.momento.keys() {
         let memo = momento.momento.get(key).unwrap();
 
-        let intersection = memo.memo.iter().fold(true, |a, b| a & b);
+        let intersection = memo.iter().fold(true, |a, b| a & b);
 
         if intersection {
             intersections.push(String::from(key));
