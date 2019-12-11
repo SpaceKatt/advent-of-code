@@ -16,9 +16,7 @@ struct Wire {
     directions: Vec<String>,
 }
 
-struct WireBox {
-    wires: Vec<Wire>,
-}
+type WireBox = Vec<Wire>;
 
 struct WireMemo {
     memo: Vec<bool>,
@@ -63,7 +61,6 @@ fn get_coordinate_from_hash(hash: String) -> Result<PortCoordinate, Box<dyn Erro
 fn parse_input(file_path: &str) -> Result<WireBox, Box<dyn Error>> {
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);
-    //let mut rdr = csv::ReaderBuilder::new().delimiter(b'\n').has_headers(false).from_reader(reader);
     let mut rdr = csv::ReaderBuilder::new().has_headers(false).delimiter(b'\n').from_reader(reader);
 
     let mut wire_box: Vec<Wire> = vec![];
@@ -86,7 +83,7 @@ fn parse_input(file_path: &str) -> Result<WireBox, Box<dyn Error>> {
         }
     }
 
-    Ok(WireBox { wires: wire_box })
+    Ok(wire_box)
 }
 
 fn get_target(direction: String) -> Result<PortCoordinate, Box<dyn Error>> {
@@ -173,11 +170,11 @@ fn main() {
     let momento_map: HashMap<String, WireMemo> = HashMap::new();
 
     let mut momento = WireMomento {
-        box_size: wire_box.wires.len(),
+        box_size: wire_box.len(),
         momento: momento_map,
     };
 
-    for (wire_id, wire) in wire_box.wires.iter().enumerate() {
+    for (wire_id, wire) in wire_box.iter().enumerate() {
         traverse_wire(wire, wire_id as u32, &mut momento);
     }
 
