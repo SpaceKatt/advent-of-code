@@ -97,6 +97,49 @@ fn process_program(opcodes: &mut Vec<i32>) {
                 next_position += 2;
                 println!("{}", opcodes[first as usize]);
             },
+            5 => {
+                let operand_left = opcodes[first as usize];
+                let operand_right = opcodes[second as usize];
+
+                if operand_left != 0 {
+                    next_position = operand_right as usize;
+                } else {
+                    next_position += 3;
+                }
+            },
+            6 => {
+                let operand_left = opcodes[first as usize];
+                let operand_right = opcodes[second as usize];
+
+                if operand_left == 0 {
+                    next_position = operand_right as usize;
+                } else {
+                    next_position += 3;
+                }
+            },
+            7 => {
+                next_position += 4;
+                let operand_left = opcodes[first as usize];
+                let operand_right = opcodes[second as usize];
+                let result = match operand_left < operand_right {
+                    true => 1,
+                    false => 0,
+                };
+
+                opcodes[dest as usize] = result;
+            },
+            8 => {
+                next_position += 4;
+                let operand_left = opcodes[first as usize];
+                let operand_right = opcodes[second as usize];
+                let result = match operand_left == operand_right {
+                    true => 1,
+                    false => 0,
+                };
+
+                opcodes[dest as usize] = result;
+
+            },
             99 => break,
             _ => panic!("Unknown opcode: {}", opcode),
         };
